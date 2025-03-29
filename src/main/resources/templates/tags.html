@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tag Manager</title>
+</head>
+<body>
+<h1>Tag Manager</h1>
+
+<h2>All Tags</h2>
+<ul>
+    <li th:each="tag : ${tags}">
+        <span th:text="${tag.name}"></span>
+        <form th:action="@{/tags/delete/{id}(id=${tag.id})}" method="post" style="display:inline;">
+            <button type="submit">Delete</button>
+        </form>
+    </li>
+</ul>
+
+<h2>Add New Tag</h2>
+<form th:action="@{/tags}" th:object="${newTag}" method="post">
+    <input type="text" th:field="*{name}" placeholder="Enter tag name">
+    <button type="submit">Add Tag</button>
+</form>
+
+<p th:if="${error}" style="color:red;" th:text="${error}"></p>
+
+</body>
+</html>
