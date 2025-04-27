@@ -19,6 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+//TODO Картинки выше 1мб не загружаются.
+//TODO Если одинаковые картинки, ломается вид
+
 
 @Controller
 @RequestMapping("/cards")
@@ -29,13 +34,11 @@ public class CardController {
     private final CardService cardService;
 
     private final TagRepository tagRepository;
-    private final TagService tagService;
 
     public CardController(CardRepository cardRepository, CardService cardService, TagRepository tagRepository, TagService tagService) {
         this.cardRepository = cardRepository;
         this.cardService = cardService;
         this.tagRepository = tagRepository;
-        this.tagService = tagService;
     }
 
     // Вывод всех карточек
@@ -76,6 +79,50 @@ public class CardController {
         }
 
         cardRepository.save(card);
+        return "redirect:/cards";
+    }
+
+    // Контроллер для редактирования карточки
+    @GetMapping("/edit/{id}")
+    public String editCardForm(@PathVariable("id") Long id, Model model) {
+        Card card = cardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid card ID: " + id));
+        model.addAttribute("card", card); // Передаем текущую карточку в форму
+        model.addAttribute("tags", tagRepository.findAll()); // Загружаем все теги для выбора
+        return "editCard"; // Шаблон для формы редактирования
+    }
+
+    // Обработка обновления карточки
+    @PostMapping("/edit/{id}")
+    public String updateCard(@PathVariable("id") Long id,
+                             @ModelAttribute("card") Card updatedCard,
+                             @RequestParam(value = "tagIds", required = false) Set<Long> tagIds,
+                             @RequestParam("imageFile") MultipartFile imageFile) {
+        // 1. Загружаем существующую карточку из базы
+        Card existingCard = cardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid card ID: " + id));
+
+        // 2. Обновляем нужные поля
+        existingCard.setName(updatedCard.getName());
+        existingCard.setRank(updatedCard.getRank());
+        existingCard.setSourceLink(updatedCard.getSourceLink());
+        existingCard.setDescription(updatedCard.getDescription());
+
+        // 3. Обновляем теги
+        if (tagIds != null) {
+            Set<Tag> selectedTags = new HashSet<>(tagRepository.findAllById(tagIds));
+            existingCard.setTags(selectedTags);
+        } else {
+            existingCard.getTags().clear(); // Если ничего не выбрано — очищаем теги
+        }
+
+        // 4. Обновляем картинку (если нужно)
+        try {
+            cardService.updateCard(id, existingCard, imageFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "redirect:/error";
+        }
+
         return "redirect:/cards";
     }
 

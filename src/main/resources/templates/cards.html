@@ -43,6 +43,8 @@
             <span th:each="tag : ${card.tags}" th:text="${tag.name}" class="tag">TagName</span>
         </td>
         <td>
+            <!-- Добавлена ссылка для редактирования -->
+            <a th:href="@{/cards/edit/{id}(id=${card.id})}">Edit</a>
             <a th:href="@{/cards/delete/{id}(id=${card.id})}">Delete</a>
         </td>
     </tr>
@@ -50,6 +52,6 @@
 </table>
 
 <a href="/cards/new">Add New Card</a>
-
+<a href="/tags">Add New Tag</a>
 </body>
 </html>

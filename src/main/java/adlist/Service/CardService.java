@@ -5,7 +5,6 @@ import adlist.Entity.FileData;
 import adlist.Repository.CardRepository;
 import adlist.Repository.FileDataRepository;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,12 +15,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class CardService {
 
-    @Autowired
-    private FileDataRepository fileDataRepository;
+    private final FileDataRepository fileDataRepository;
 
     private final CardRepository cardRepository;
 
@@ -29,7 +28,8 @@ public class CardService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    public CardService(CardRepository cardRepository) {
+    public CardService(FileDataRepository fileDataRepository, CardRepository cardRepository) {
+        this.fileDataRepository = fileDataRepository;
         this.cardRepository = cardRepository;
     }
 
@@ -42,6 +42,26 @@ public class CardService {
             throw new IllegalArgumentException("Card with this name already exists");
         }
         return cardRepository.save(card);
+    }
+
+    public Card updateCard(Long id, Card card, MultipartFile imageFile) throws IOException {
+        // Находим существующую карточку
+        Card existingCard = cardRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid card ID: " + id));
+
+        // Обновляем данные карточки
+        existingCard.setName(card.getName());
+        existingCard.setRank(card.getRank());
+        existingCard.setSourceLink(card.getSourceLink());
+        existingCard.setDescription(card.getDescription());
+
+        // Обрабатываем изображение, если оно новое
+        if (!imageFile.isEmpty()) {
+            existingCard.setImageUrl(uploadImageToFileSystem(imageFile));  // загрузка изображения
+        }
+
+        // Сохраняем обновленную карточку
+        return cardRepository.save(existingCard);
     }
 
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
