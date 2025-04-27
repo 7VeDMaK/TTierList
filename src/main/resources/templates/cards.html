@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Cards</title>
+</head>
+<body>
+
+<h2>All Cards</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Rank</th>
+        <th>Image</th>
+        <th>Link</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="card : ${cards}">
+        <td th:text="${card.name}"></td>
+        <td th:text="${card.rank}"></td>
+        <td>
+            <img th:src="@{|${uploadDir}${card.imageUrl}|}" alt="Card Image" width="100" height="100">
+        </td>
+        <td>
+            <a th:href="${card.sourceLink}" target="_blank" th:text="${card.sourceLink}"></a>
+        </td>
+        <td>
+            <a th:href="@{/cards/delete/{id}(id=${card.id})}">Delete</a>
+        </td>
+    </tr>
+
+    </tbody>
+</table>
+
+<a href="/cards/new">Add New Card</a>
+
+</body>
+</html>

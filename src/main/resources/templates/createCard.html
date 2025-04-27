@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Card</title>
+</head>
+<body>
+
+<h2>Create New Card</h2>
+<form th:action="@{/cards/new}" th:object="${newCard}" method="post" enctype="multipart/form-data">
+    <label for="name">Name:</label>
+    <input type="text" th:field="*{name}" id="name" required><br>
+
+    <label for="rank">Rank:</label>
+    <select th:field="*{rank}" id="rank">
+        <option value="SSS">SSS</option>
+        <option value="AAA">AAA</option>
+        <option value="BBBP">BBBP</option>
+        <option value="BBBN">BBBN</option>
+        <option value="CC">CC</option>
+        <option value="DD">DD</option>
+        <option value="FFF">FFF</option>
+    </select><br>
+
+    <label for="sourceLink">Source Link:</label>
+    <input type="text" th:field="*{sourceLink}" id="sourceLink"><br>
+
+    <label for="description">Description:</label>
+    <textarea th:field="*{description}" id="description"></textarea><br>
+
+    <!-- Поле для загрузки изображения -->
+    <label for="imageFile">Image File:</label>
+    <input type="file" id="imageFile" name="imageFile"><br>
+
+    <button type="submit">Create Card</button>
+</form>
+
+<a href="/cards">Back to Cards</a>
+
+</body>
+</html>
