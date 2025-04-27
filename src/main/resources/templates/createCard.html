@@ -2,10 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Create Card</title>
+    <style>
+        details {
+            margin-bottom: 10px;
+        }
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .tag-list {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 </head>
 <body>
 
 <h2>Create New Card</h2>
+
 <form th:action="@{/cards/new}" th:object="${newCard}" method="post" enctype="multipart/form-data">
     <label for="name">Name:</label>
     <input type="text" th:field="*{name}" id="name" required><br>
@@ -30,6 +44,20 @@
     <!-- Поле для загрузки изображения -->
     <label for="imageFile">Image File:</label>
     <input type="file" id="imageFile" name="imageFile"><br>
+
+    <!-- Выбор тегов через выпадающий список -->
+    <label>Tags:</label>
+    <details>
+        <summary>Select Tags</summary>
+        <div class="tag-list">
+            <div th:each="tag : ${tags}">
+                <label>
+                    <input type="checkbox" name="tagIds" th:value="${tag.id}">
+                    <span th:text="${tag.name}"></span>
+                </label>
+            </div>
+        </div>
+    </details><br>
 
     <button type="submit">Create Card</button>
 </form>

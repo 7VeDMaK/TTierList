@@ -23,8 +23,6 @@ public class CardService {
     @Autowired
     private FileDataRepository fileDataRepository;
 
-//    private final String FOLDER_PATH="/Users/javatechie/Desktop/MyFIles/";
-
     private final CardRepository cardRepository;
 
     @Getter
@@ -50,8 +48,7 @@ public class CardService {
         String filePath = uploadDir + file.getOriginalFilename();
         fileDataRepository.save(FileData.builder()
                 .name(file.getOriginalFilename())
-                .type(file.getContentType())
-                .filePath(file.getOriginalFilename()).build());
+                .type(file.getContentType()).build());
 
         file.transferTo(new File(filePath));
 
@@ -60,16 +57,9 @@ public class CardService {
 
     public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
         Optional<FileData> fileData = fileDataRepository.findByName(fileName);
-        String filePath = fileData.get().getFilePath();
+        String filePath = fileData.get().getName();
         Path fullPath = Paths.get(uploadDir, fileName);
         byte[] images = Files.readAllBytes(fullPath);
         return images;
-    }
-
-    // Комбинированный метод: создаем карту и сохраняем изображение, устанавливая URL
-    public Card createCardWithImage(Card card, MultipartFile file) throws IOException {
-        String imageUrl = uploadImageToFileSystem(file);
-        card.setImageUrl(imageUrl);
-        return createCard(card);
     }
 }
