@@ -2,9 +2,11 @@ package adlist.Controller;
 
 import adlist.Entity.Card;
 import adlist.Entity.Tag;
+import adlist.Enum.Rank;
 import adlist.Repository.CardRepository;
 import adlist.Repository.TagRepository;
 import adlist.Service.CardService;
+import adlist.Service.RankGroup;
 import adlist.Service.TagService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 //TODO Картинки выше 1мб не загружаются.
 //TODO Если одинаковые картинки, ломается вид
@@ -44,11 +49,24 @@ public class CardController {
     // Вывод всех карточек
     @GetMapping
     public String getAllCards(Model model) {
-        model.addAttribute("cards", cardRepository.findAll());
+        List<Card> cards = cardRepository.findAll();
+
+        // Группируем карты по Rank
+        Map<Rank, List<Card>> groupedCards = cards.stream()
+                .collect(Collectors.groupingBy(Card::getRank));
+
+        // Формируем упорядоченный список групп рангов
+        List<RankGroup> rankGroups = Arrays.stream(Rank.values())
+                .map(rank -> new RankGroup(rank, groupedCards.getOrDefault(rank, List.of())))
+                .collect(Collectors.toList());
+
+        model.addAttribute("rankGroups", rankGroups);
         model.addAttribute("uploadDir", "/fileSystem/");
-        model.addAttribute("tags", tagRepository.findAll());
+
         return "cards"; // шаблон для отображения списка карточек
     }
+
+
 
     // Форма создания новой карточки
     @GetMapping("/new")
