@@ -60,12 +60,20 @@ public class CardController {
                 .map(rank -> new RankGroup(rank, groupedCards.getOrDefault(rank, List.of())))
                 .collect(Collectors.toList());
 
+        model.addAttribute("cards", cards);
         model.addAttribute("rankGroups", rankGroups);
         model.addAttribute("uploadDir", "/fileSystem/");
 
         return "cards"; // шаблон для отображения списка карточек
     }
 
+    @GetMapping("{id}")
+    public String showCardDetails(@PathVariable Long id, Model model) {
+        Card card = cardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid card ID: " + id));
+        model.addAttribute("card", card);
+        model.addAttribute("uploadDir", "/fileSystem/");
+        return "card-details"; // имя html-файла
+    }
 
 
     // Форма создания новой карточки

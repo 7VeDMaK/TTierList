@@ -1,0 +1,138 @@
+/* === Переопределяем переменные Bootstrap === */
+:root {
+    --bs-table-bg: #1a1b16;
+    --bs-table-border-color: #1a1b16;
+    --bs-table-striped-bg: #46493b;
+    --bs-table-hover-bg: #46493b;
+}
+
+body {
+    background-color: #23242a;
+    color: #e0e0e0;
+}
+
+.card-container {
+    background: #37373e;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-top: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.table {
+    border-collapse: collapse;
+}
+
+.table > tbody > tr > th,
+.table > tbody > tr > td {
+    border-top: none;
+    padding: 0;
+}
+
+.table > tbody > tr + tr > th,
+.table > tbody > tr + tr > td {
+    border-top: 1px solid #46493b;
+}
+
+.table {
+    border: 1px solid #46493b;
+}
+
+.table th,
+.table td {
+    background-color: #373a3c;
+}
+
+.rank-cell {
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    width: 150px;
+    height: 100px;
+    font-size: 1.2rem;
+    background-color: transparent;
+}
+
+td.rank-SSS {
+    background-color: #fe7f7e;
+    color: #23242a;
+}
+
+td.rank-AAA {
+    background-color: #ffbe7e;
+    color: #23242a;
+}
+
+td.rank-BBBP {
+    background-color: #fffe7e;
+    color: #23242a;
+}
+
+td.rank-BBBN {
+    background-color: #7fbefe;
+    color: #23242a;
+}
+
+td.rank-CC {
+    background-color: #ff7fff;
+    color: #23242a;
+}
+
+td.rank-DD {
+    background-color: #848584;
+    color: #23242a;
+}
+
+td.rank-FFF {
+    background-color: #cececf;
+    color: #23242a;
+}
+
+.card-row {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: transparent;
+}
+
+/* === Карточка с инфой === */
+.card-wrapper {
+    position: relative;
+}
+
+.card-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    background-color: #2c2d33;
+    transition: transform 0.3s ease;
+    border: 2px solid #1a1b16;
+}
+
+/* Скрываем всплывающее окно по умолчанию */
+.card-info-popup {
+    position: absolute;
+    top: -120%; /* Позиционируем его сверху над картинкой */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0; /* Скрыто */
+    visibility: hidden; /* Скрыто */
+    pointer-events: none; /* Не взаимодействует с мышью */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Когда картинка ховерается, показываем всплывающее окно */
+.card-wrapper:hover .card-info-popup {
+    opacity: 1; /* Показываем окно */
+    visibility: visible; /* Окно становится видимым */
+    pointer-events: auto; /* Даем возможность взаимодействовать с окном */
+}
+
+.card-info-popup h5, .card-info-popup p {
+    margin: 5px 0;
+}

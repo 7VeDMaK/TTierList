@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${card.name}">Card Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/styles.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1e1f26;
+            color: #e0e0e0;
+        }
+
+        .custom-card {
+            background-color: #2c2d33;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-header-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-details {
+            margin-top: -100px; /* Поднимает название и теги ближе к картинке */
+        }
+
+
+        .card-image-preview {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            background-color: #2c2d33;
+            border: 2px solid #464646;
+        }
+
+        .card-rank-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-rank {
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            background-color: #46493b;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .tags-container {
+            margin-top: 1rem;
+        }
+
+        .tags-container .badge {
+            background-color: #5a5c6a;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2, h4 {
+            color: #ffffff;
+        }
+
+        a {
+            color: #76b5ff;
+        }
+
+        a:hover {
+            color: #a8d0ff;
+        }
+
+        /* Цвета для рангов */
+        .badge-rank.rank-SSS {
+            background-color: #fe7f7e; /* Ярко-красный */
+            color: #23242a;
+        }
+
+        .badge-rank.rank-AAA {
+            background-color: #ffbe7e; /* Оранжевый */
+            color: #23242a;
+        }
+
+        .badge-rank.rank-BBBP {
+            background-color: #fffe7e; /* Жёлтый */
+            color: #23242a;
+        }
+
+        .badge-rank.rank-BBBN {
+            background-color: #7fbefe; /* Голубой */
+            color: #23242a;
+        }
+
+        .badge-rank.rank-CC {
+            background-color: #ff7fff; /* Розовый */
+            color: #23242a;
+        }
+
+        .badge-rank.rank-DD {
+            background-color: #848584; /* Серый */
+            color: #23242a;
+        }
+
+        .badge-rank.rank-FFF {
+            background-color: #cececf; /* Светло-серый */
+            color: #23242a;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+
+    <div class="custom-card">
+
+        <a href="/cards" class="btn btn-outline-light mb-3">← Back to Tier List</a>
+        <!-- Верхняя секция -->
+        <div class="card-header-section">
+            <!-- Картинка -->
+            <img th:src="@{|${uploadDir}${card.imageUrl}|}" class="card-image-preview" th:alt="${card.name}"/>
+
+            <!-- Название + Теги -->
+            <div class="card-details">
+                <h2 th:text="${card.name}"></h2>
+
+                <div class="mb-2">
+                <span th:each="tag : ${card.tags}"
+              class="badge bg-secondary me-1"
+              th:text="${tag.getName()}"></span>
+                </div>
+            </div>
+
+
+            <!-- Тир -->
+            <div class="card-rank-section">
+                <span class="badge badge-rank"
+                      th:classappend="' rank-' + ${card.rank.name()}"
+                      th:text="${card.rank}">
+                </span>
+            </div>
+        </div>
+
+        <!-- Описание -->
+        <div class="text-start mb-4">
+            <h4>Description</h4>
+            <p th:text="${card.description}">No description provided.</p>
+        </div>
+
+        <!-- Ссылки -->
+        <div class="text-start mb-4">
+            <h4>Links</h4>
+            <ul>
+                <li><a th:href="${card.sourceLink}" target="_blank">Source</a></li>
+            </ul>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="d-flex justify-content-center gap-3">
+            <a th:href="@{/card/edit/{id}(id=${card.id})}" class="btn btn-primary">Edit</a>
+            <form th:action="@{/card/delete/{id}(id=${card.id})}" method="post">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
