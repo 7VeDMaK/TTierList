@@ -18,3 +18,5 @@ The application is currently accessible at: http://localhost:8081/hello?name=bro
    Password: password  
    Port: 5431  
    URL: jdbc:postgresql://localhost:5431/adlist-db```
+   
+5. **Now you can build this project and use .jar to give other people your app with current db**

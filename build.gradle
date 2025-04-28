@@ -1,4 +1,4 @@
-    plugins {
+plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
@@ -22,6 +22,23 @@ configurations {
 repositories {
     mavenCentral()
 }
+
+bootJar {
+    from('src/main/resources/static/css/uploads') {
+        into('static/css/uploads')
+    }
+    from('db') {
+        into('db')
+    }
+}
+
+task copyDbFile(type: Copy) {
+    from 'src/main/resources/db/data.mv.db' // Исходное местоположение файла базы данных
+    into "$buildDir/libs/db" // Куда скопировать
+}
+
+build.dependsOn(copyDbFile)
+
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
