@@ -65,11 +65,27 @@ public class CardService {
     }
 
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
-        String filePath = uploadDir + file.getOriginalFilename();
+        // Получаем абсолютный путь до папки, где запущено приложение
+        Path currentDir = Paths.get("").toAbsolutePath();
+        System.out.println(currentDir);
+        Path uploadPath = currentDir.resolve(uploadDir);
+        System.out.println(uploadPath);
+
+        // Создаём папку, если её нет
+        File uploadFolder = uploadPath.toFile();
+        if (!uploadFolder.exists()) {
+            uploadFolder.mkdirs();
+        }
+
+        // Полный путь до нового файла
+        String filePath = uploadPath.resolve(file.getOriginalFilename()).toString();
+
         fileDataRepository.save(FileData.builder()
                 .name(file.getOriginalFilename())
-                .type(file.getContentType()).build());
+                .type(file.getContentType())
+                .build());
 
+        // Сохраняем файл
         file.transferTo(new File(filePath));
 
         return file.getOriginalFilename();
