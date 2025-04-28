@@ -154,7 +154,7 @@ public class CardController {
 
 
     // Удаление карточки
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteCard(@PathVariable("id") Long id) {
         cardRepository.deleteById(id);
         return "redirect:/cards";

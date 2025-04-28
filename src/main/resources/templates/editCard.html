@@ -2,55 +2,72 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Edit Card</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet"> <!-- подключаем свой тёмный стиль -->
 </head>
-<body>
+<body class="bg-dark text-light">
 
-<h2>Edit Card</h2>
-<form th:action="@{/cards/edit/{id}(id=${card.id})}" th:object="${card}" method="post" enctype="multipart/form-data">
-    <label for="name">Name:</label>
-    <input type="text" th:field="*{name}" id="name" required><br>
+<div class="container py-5">
+    <div class="card bg-secondary p-4 rounded shadow-lg">
+        <h2 class="mb-4">Edit Card</h2>
 
-    <label for="rank">Rank:</label>
-    <select th:field="*{rank}" id="rank">
-        <option value="SSS">SSS</option>
-        <option value="AAA">AAA</option>
-        <option value="BBBP">BBBP</option>
-        <option value="BBBN">BBBN</option>
-        <option value="CC">CC</option>
-        <option value="DD">DD</option>
-        <option value="FFF">FFF</option>
-    </select><br>
-
-    <label for="sourceLink">Source Link:</label>
-    <input type="text" th:field="*{sourceLink}" id="sourceLink"><br>
-
-    <label for="description">Description:</label>
-    <textarea th:field="*{description}" id="description"></textarea><br>
-
-    <!-- Поле для загрузки изображения -->
-    <label for="imageFile">Image File:</label>
-    <input type="file" id="imageFile" name="imageFile"><br>
-
-    <label>Tags:</label>
-    <details>
-        <summary>Select Tags</summary>
-        <div class="tag-list">
-            <div th:each="tag : ${tags}">
-                <label>
-                    <!-- Исправляем name, чтобы передавать массив tagIds -->
-                    <input type="checkbox" name="tagIds" th:value="${tag.id}"
-                           th:checked="${card.tags.contains(tag)}">
-                    <span th:text="${tag.name}"></span>
-                </label>
+        <form th:action="@{/cards/edit/{id}(id=${card.id})}" th:object="${card}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" th:field="*{name}" id="name" class="form-control" required>
             </div>
-        </div>
-    </details><br>
 
+            <div class="mb-3">
+                <label for="rank" class="form-label">Rank:</label>
+                <select th:field="*{rank}" id="rank" class="form-select">
+                    <option value="SSS">SSS</option>
+                    <option value="AAA">AAA</option>
+                    <option value="BBBP">BBBP</option>
+                    <option value="BBBN">BBBN</option>
+                    <option value="CC">CC</option>
+                    <option value="DD">DD</option>
+                    <option value="FFF">FFF</option>
+                </select>
+            </div>
 
-    <button type="submit">Update Card</button>
-</form>
+            <div class="mb-3">
+                <label for="sourceLink" class="form-label">Source Link:</label>
+                <input type="text" th:field="*{sourceLink}" id="sourceLink" class="form-control">
+            </div>
 
-<a href="/cards">Back to Cards</a>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <textarea th:field="*{description}" id="description" class="form-control" rows="5"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">Image File:</label>
+                <input type="file" id="imageFile" name="imageFile" class="form-control">
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Tags:</label>
+                <details class="bg-dark p-3 rounded">
+                    <summary class="mb-2 text-light">Select Tags</summary>
+                    <div class="row">
+                        <div class="col-6 col-md-4" th:each="tag : ${tags}">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tagIds"
+                                       th:value="${tag.id}" th:checked="${card.tags.contains(tag)}" id="tag-${tag.id}">
+                                <label class="form-check-label text-light" th:for="|tag-${tag.id}|" th:text="${tag.name}"></label>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="/cards" class="btn btn-outline-light">Back to Cards</a>
+                <button type="submit" class="btn btn-primary">Update Card</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 </body>
 </html>
