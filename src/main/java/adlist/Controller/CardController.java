@@ -82,6 +82,32 @@ public class CardController {
         return "cards"; // шаблон для отображения списка карточек
     }
 
+    @GetMapping("info")
+    public String getAllCards2(Model model) {
+        List<Card> cards = cardRepository.findAll();
+
+        // Группируем карты по Rank
+        Map<Rank, List<Card>> groupedCards = cards.stream()
+                .collect(Collectors.groupingBy(Card::getRank));
+
+        // Формируем упорядоченный список групп рангов
+        List<RankGroup> rankGroups = Arrays.stream(Rank.values())
+                .map(rank -> {
+                    List<Card> sortedCards = groupedCards.getOrDefault(rank, List.of()).stream()
+                            .sorted(Comparator.comparingInt(Card::getPosition))
+                            .collect(Collectors.toList());
+                    return new RankGroup(rank, sortedCards);
+                })
+                .collect(Collectors.toList());
+
+
+        model.addAttribute("cards", cards);
+        model.addAttribute("rankGroups", rankGroups);
+        model.addAttribute("uploadDir", "/fileSystem/");
+
+        return "cards2"; // шаблон для отображения списка карточек
+    }
+
     @GetMapping("{id}")
     public String showCardDetails(@PathVariable Long id, Model model) {
         Card card = cardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid card ID: " + id));

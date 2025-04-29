@@ -148,7 +148,7 @@ td.rank-FFF {
     background-color: #2c2d33;
     transition: transform 0.3s ease;
     border: 2px solid #1a1b16;
-    cursor: default;
+    /*cursor: default;*/
     z-index: 2;
     position: relative;
 }
@@ -181,7 +181,7 @@ td.rank-FFF {
 
 /* Перетаскиваемая карточка */
 .card-wrapper.dragging {
-    opacity: 0.0;
+    opacity: 1.0;
     transform: scale(1.05);
     z-index: 999;
 }

@@ -7,70 +7,6 @@
     <link href="/css/cards.css" rel="stylesheet">
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const rows = document.querySelectorAll('.card-row');
-
-        rows.forEach(row => {
-            new Sortable(row, {
-                animation: 150,
-                group: 'cards',
-                draggable: '.card-wrapper',
-                ghostClass: 'ghost',
-
-                onStart(evt) {
-                    document.body.classList.add('drag-active');
-                    evt.item.classList.add('dragging');
-                },
-
-                onEnd(evt) {
-                    document.body.classList.remove('drag-active');
-                    evt.item.classList.remove('dragging');
-
-                    // 1. Соберём всю структуру по рангам
-                    const allRows = document.querySelectorAll('tr');
-                    const rankMap = {};
-
-                    allRows.forEach(tr => {
-                        const rankCell = tr.querySelector('.rank-cell');
-                        const rank = rankCell?.textContent.trim();
-                        const row = tr.querySelector('.card-row');
-                        if (!rank || !row) return;
-
-                        const cardIds = Array.from(row.querySelectorAll('.card-wrapper')).map(wrapper => {
-                            const href = wrapper.querySelector('a').getAttribute('href');
-                            return href.split('/').pop();
-                        });
-
-                        rankMap[rank] = cardIds;
-                    });
-
-
-                    // 2. Отправим на сервер полную структуру
-                    fetch('/cards/reorder', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({rankMap: rankMap})
-                    }).then(res => {
-                        if (!res.ok) {
-                            alert('Ошибка при обновлении порядка!');
-                        }
-                    });
-
-                    document.body.classList.add('disable-info');
-                    setTimeout(() => {
-                        document.body.classList.remove('disable-info');
-                    }, 1000);
-                }
-
-            });
-        });
-    });
-</script>
-
-
 <body>
 
 <div class="container">
@@ -79,9 +15,11 @@
             <h2>All Cards</h2>
 
             <div class="d-flex gap-2">
+                <a href="/cards/info" class="btn btn-danger">Info mode</a>
                 <a href="/tags" class="btn btn-outline-secondary">Add Tag</a>
                 <a href="/cards/new" class="btn btn-primary">Add Card</a>
             </div>
+
         </div>
 
 
