@@ -27,12 +27,44 @@
                     document.body.classList.remove('drag-active');
                     evt.item.classList.remove('dragging');
 
-                    // ⏱ Задержка перед включением инфы
+                    // 1. Соберём всю структуру по рангам
+                    const allRows = document.querySelectorAll('tr');
+                    const rankMap = {};
+
+                    allRows.forEach(tr => {
+                        const rankCell = tr.querySelector('.rank-cell');
+                        const rank = rankCell?.textContent.trim();
+                        const row = tr.querySelector('.card-row');
+                        if (!rank || !row) return;
+
+                        const cardIds = Array.from(row.querySelectorAll('.card-wrapper')).map(wrapper => {
+                            const href = wrapper.querySelector('a').getAttribute('href');
+                            return href.split('/').pop();
+                        });
+
+                        rankMap[rank] = cardIds;
+                    });
+
+
+                    // 2. Отправим на сервер полную структуру
+                    fetch('/cards/reorder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({rankMap: rankMap})
+                    }).then(res => {
+                        if (!res.ok) {
+                            alert('Ошибка при обновлении порядка!');
+                        }
+                    });
+
                     document.body.classList.add('disable-info');
                     setTimeout(() => {
                         document.body.classList.remove('disable-info');
-                    }, 1000); // 1 секунда
+                    }, 1000);
                 }
+
             });
         });
     });

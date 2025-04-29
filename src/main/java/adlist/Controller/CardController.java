@@ -8,18 +8,24 @@ import adlist.Repository.TagRepository;
 import adlist.Service.CardService;
 import adlist.Service.RankGroup;
 import adlist.Service.TagService;
+import adlist.dto.ReorderRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +66,14 @@ public class CardController {
 
         // Формируем упорядоченный список групп рангов
         List<RankGroup> rankGroups = Arrays.stream(Rank.values())
-                .map(rank -> new RankGroup(rank, groupedCards.getOrDefault(rank, List.of())))
+                .map(rank -> {
+                    List<Card> sortedCards = groupedCards.getOrDefault(rank, List.of()).stream()
+                            .sorted(Comparator.comparingInt(Card::getPosition))
+                            .collect(Collectors.toList());
+                    return new RankGroup(rank, sortedCards);
+                })
                 .collect(Collectors.toList());
+
 
         model.addAttribute("cards", cards);
         model.addAttribute("rankGroups", rankGroups);
@@ -119,6 +131,18 @@ public class CardController {
         model.addAttribute("tags", tagRepository.findAll()); // Загружаем все теги для выбора
         return "editCard"; // Шаблон для формы редактирования
     }
+
+    @PostMapping("/reorder")
+    @ResponseBody
+    public ResponseEntity<?> reorderCards(@RequestBody ReorderRequest request) {
+        try {
+            cardService.reorderCards(request.getRankMap());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка при обновлении порядка");
+        }
+    }
+
 
     // Обработка обновления карточки
     @PostMapping("/edit/{id}")

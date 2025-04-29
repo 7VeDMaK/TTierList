@@ -2,11 +2,14 @@ package adlist.Service;
 
 import adlist.Entity.Card;
 import adlist.Entity.FileData;
+import adlist.Enum.Rank;
 import adlist.Repository.CardRepository;
 import adlist.Repository.FileDataRepository;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,6 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -63,6 +68,27 @@ public class CardService {
         // Сохраняем обновленную карточку
         return cardRepository.save(existingCard);
     }
+
+    @Transactional
+    public void reorderCards(Map<String, List<Long>> rankMap) {
+        for (Map.Entry<String, List<Long>> entry : rankMap.entrySet()) {
+            Rank rank = Rank.valueOf(entry.getKey());
+            List<Long> ids = entry.getValue();
+            for (int i = 0; i < ids.size(); i++) {
+                Long cardId = ids.get(i);
+                Optional<Card> optionalCard = cardRepository.findById(cardId);
+                if (optionalCard.isPresent()) {
+                    Card card = optionalCard.get();
+                    card.setRank(rank);
+                    card.setPosition(i);
+                    cardRepository.save(card); // save обновит, если id уже есть
+                }
+            }
+        }
+    }
+
+
+
 
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
         // Получаем абсолютный путь до папки, где запущено приложение

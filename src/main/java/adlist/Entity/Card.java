@@ -1,17 +1,7 @@
 package adlist.Entity;
 
 import adlist.Enum.Rank;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.HashSet;
@@ -30,6 +20,9 @@ public class Card {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Rank rank;
+
+    @Column(name = "position")
+    private int position; // 🔥 Добавлено поле позиции
 
     @Column(name = "image_url")
     private String imageUrl;
