@@ -4,43 +4,43 @@
     <meta charset="UTF-8">
     <title>Tag Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/cards.css" rel="stylesheet">
+    <link href="/css/cards.css" rel="stylesheet"> <!-- Используем те же стили -->
 </head>
-<body style="background-color: #23242a; color: #f8f9fa;">
+<body>
 
+<div class="container">
+    <div class="card-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Tag Manager</h2>
 
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Tag Manager</h1>
-        <div class="d-flex gap-2">
-            <a href="/cards" class="btn btn-outline-secondary">Back to Cards</a>
-            <a href="/cards/new" class="btn btn-primary">Add New Card</a>
+            <div class="d-flex gap-2">
+                <a href="/cards" class="btn btn-outline-secondary">Back to Cards</a>
+                <a href="/cards/new" class="btn btn-primary">Add New Card</a>
+            </div>
         </div>
+
+        <h4>All Tags</h4>
+        <ul class="list-group mb-4">
+            <li class="list-group-item d-flex justify-content-between align-items-center bg-dark text-light"
+                th:each="tag : ${tags}">
+                <span th:text="${tag.name}"></span>
+                <form th:action="@{/tags/delete/{id}(id=${tag.id})}" method="post" style="margin: 0;">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </li>
+        </ul>
+
+        <h4>Add New Tag</h4>
+        <form th:action="@{/tags}" th:object="${newTag}" method="post" class="mb-3">
+            <div class="input-group">
+                <input type="text" th:field="*{name}" class="form-control" placeholder="Enter tag name">
+                <button type="submit" class="btn btn-success">Add Tag</button>
+            </div>
+        </form>
+
+        <p th:if="${error}" class="text-danger" th:text="${error}"></p>
     </div>
-
-    <h2>All Tags</h2>
-    <ul class="list-group mb-4">
-        <li class="list-group-item d-flex justify-content-between align-items-center bg-secondary text-light"
-            th:each="tag : ${tags}">
-            <span th:text="${tag.name}"></span>
-            <form th:action="@{/tags/delete/{id}(id=${tag.id})}" method="post" style="margin: 0;">
-                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-            </form>
-        </li>
-    </ul>
-
-    <h2>Add New Tag</h2>
-    <form th:action="@{/tags}" th:object="${newTag}" method="post" class="mb-3">
-        <div class="input-group">
-            <input type="text" th:field="*{name}" class="form-control" placeholder="Enter tag name">
-            <button type="submit" class="btn btn-success">Add Tag</button>
-        </div>
-    </form>
-
-    <p th:if="${error}" class="text-danger" th:text="${error}"></p>
-
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
