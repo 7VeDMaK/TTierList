@@ -6,6 +6,39 @@
     <!-- Подключаем внешний CSS файл -->
     <link href="/css/cards.css" rel="stylesheet">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll('.card-row');
+
+        rows.forEach(row => {
+            new Sortable(row, {
+                animation: 150,
+                group: 'cards',
+                draggable: '.card-wrapper',
+                ghostClass: 'ghost',
+
+                onStart(evt) {
+                    document.body.classList.add('drag-active');
+                    evt.item.classList.add('dragging');
+                },
+
+                onEnd(evt) {
+                    document.body.classList.remove('drag-active');
+                    evt.item.classList.remove('dragging');
+
+                    // ⏱ Задержка перед включением инфы
+                    document.body.classList.add('disable-info');
+                    setTimeout(() => {
+                        document.body.classList.remove('disable-info');
+                    }, 1000); // 1 секунда
+                }
+            });
+        });
+    });
+</script>
+
+
 <body>
 
 <div class="container">
