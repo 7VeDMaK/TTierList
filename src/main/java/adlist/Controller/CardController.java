@@ -97,7 +97,7 @@ public class CardController {
                 })
                 .collect(Collectors.toList());
 
-
+        model.addAttribute("allTags", tagRepository.findAll());
         model.addAttribute("cards", cards);
         model.addAttribute("rankGroups", rankGroups);
         model.addAttribute("uploadDir", "/fileSystem/");
