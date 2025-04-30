@@ -33,6 +33,9 @@ public class Card {
     @Lob
     private String description;
 
+    @Transient // не сохраняется в базу
+    private int rowIndex;
+
     @ManyToMany
     @JoinTable(
             name = "card_tags",

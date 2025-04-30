@@ -196,3 +196,66 @@ body.drag-active .card-info-popup {
     display: none !important;
     pointer-events: none !important;
 }
+
+.card-info-popup h5 {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.card-info-popup .tags {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-info-popup .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+}
+
+span.rank-SSS {
+    background-color: #fe7f7e !important;
+    color: #23242a;
+}
+
+span.rank-AAA {
+    background-color: #ffbe7e !important;
+    color: #23242a;
+}
+
+span.rank-BBBP {
+    background-color: #fffe7e !important;
+    color: #23242a;
+}
+
+span.rank-BBBN {
+    background-color: #7fbefe !important;
+    color: #23242a;
+}
+
+span.rank-CC {
+    background-color: #ff7fff !important;
+    color: #23242a;
+}
+
+span.rank-DD {
+    background-color: #848584 !important;
+    color: #23242a;
+}
+
+span.rank-FFF {
+    background-color: #cececf !important;
+    color: #23242a;
+}
+
+.custom-pill {
+    display: inline-block;
+    padding: 0.3em 0.7em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #fff;
+    background-color: #6c757d; /* fallback */
+    border-radius: 999px;
+    text-align: center;
+    white-space: nowrap;
+}

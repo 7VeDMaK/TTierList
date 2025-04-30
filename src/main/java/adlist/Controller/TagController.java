@@ -1,6 +1,8 @@
 package adlist.Controller;
 
+import adlist.Entity.Card;
 import adlist.Entity.Tag;
+import adlist.Repository.CardRepository;
 import adlist.Repository.TagRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,14 +11,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/tags")
 public class TagController {
     private final TagRepository tagRepository;
+    private final CardRepository cardRepository;
 
-    public TagController(TagRepository tagRepository) {
+    public TagController(TagRepository tagRepository, CardRepository cardRepository) {
         this.tagRepository = tagRepository;
+        this.cardRepository = cardRepository;
     }
 
     @GetMapping
@@ -40,9 +47,30 @@ public class TagController {
     }
 
     @PostMapping("/delete/{id}")
-    public String deleteTag(@PathVariable Long id) {
-        tagRepository.deleteById(id);
+    public String deleteTag(@PathVariable("id") Long id) {
+        Tag tag = tagRepository.findById(id).orElse(null);
+        if (tag != null) {
+            // Удалим связь тега с карточками
+            List<Card> cardsWithTag = cardRepository.findByTagsContaining(tag);
+            for (Card card : cardsWithTag) {
+                card.getTags().remove(tag);
+            }
+            cardRepository.saveAll(cardsWithTag); // Сохраняем изменения
+            tagRepository.delete(tag); // Удаляем тег
+        }
         return "redirect:/tags";
     }
+
+
+    @PostMapping("/rename/{id}")
+    public String renameTag(@PathVariable("id") Long id, @RequestParam("name") String newName) {
+        Tag tag = tagRepository.findById(id).orElse(null);
+        if (tag != null && newName != null && !newName.trim().isEmpty()) {
+            tag.setName(newName.trim());
+            tagRepository.save(tag);
+        }
+        return "redirect:/tags";
+    }
+
 }
 

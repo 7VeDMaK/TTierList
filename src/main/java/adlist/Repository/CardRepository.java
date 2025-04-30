@@ -1,6 +1,7 @@
 package adlist.Repository;
 
 import adlist.Entity.Card;
+import adlist.Entity.Tag;
 import adlist.Enum.Rank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,6 +20,9 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     void updateRankAndPosition(@Param("id") Long id, @Param("rank") Rank rank, @Param("position") int position);
 
     List<Card> findByRankOrderByPosition(Rank rank);
+
+    List<Card> findByTagsContaining(Tag tag);
+
 
 
 }
