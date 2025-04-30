@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -87,7 +90,24 @@ public class CardService {
         }
     }
 
+    public void resizeImage(String inputPath, String outputPath) throws IOException {
+        final int SIZE = 512;
+        File inputFile = new File(inputPath);
+        BufferedImage originalImage = ImageIO.read(inputFile);
 
+        // Создание нового изображения с указанным размером
+        Image scaledImage = originalImage.getScaledInstance(SIZE, SIZE, Image.SCALE_SMOOTH);
+        BufferedImage bufferedImage = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_RGB);
+
+        // Перерисовываем изображение в новый буфер с нужным размером
+        Graphics2D g = bufferedImage.createGraphics();
+        g.drawImage(scaledImage, 0, 0, null);
+        g.dispose();
+
+        // Сохраняем измененное изображение
+        File outputFile = new File(outputPath);
+        ImageIO.write(bufferedImage, "jpg", outputFile); // Используйте подходящий формат
+    }
 
 
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {

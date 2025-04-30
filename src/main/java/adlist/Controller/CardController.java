@@ -32,9 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//TODO Картинки выше 1мб не загружаются.
 //TODO Если одинаковые картинки, ломается вид
-//TODO Сделать одинаковый css background везде, добавить еще пару кнопок, изменить вид карточки и наводку
 //TODO  Проверь, создает ли папка uploads сама себя
 
 

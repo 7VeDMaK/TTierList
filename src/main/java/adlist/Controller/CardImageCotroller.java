@@ -22,6 +22,7 @@ public class CardImageCotroller {
 
     @PostMapping("/fileSystem")
     public ResponseEntity<?> uploadImageToFIleSystem(@RequestParam("image") MultipartFile file) throws IOException {
+//        service.resizeImage();
         String uploadImage = service.uploadImageToFileSystem(file);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(uploadImage);

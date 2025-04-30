@@ -12,37 +12,34 @@
 
 
         <a href="/cards" class="btn btn-outline-light mb-3">← Back to Tier List</a>
-        <!-- Верхняя секция -->
-        <div class="card-header-section">
-            <!-- Картинка -->
-            <img th:src="@{|${uploadDir}${card.imageUrl}|}" class="card-image-preview" th:alt="${card.name}"/>
+        <div class="card-header-wrapper">
+            <div class="card-header-section">
+                <!-- Картинка -->
+                <img th:src="@{|${uploadDir}${card.imageUrl}|}" class="card-image-preview" th:alt="${card.name}"/>
 
-            <!-- Название + Теги -->
-            <div class="card-details">
-                <h2 th:text="${card.name}"></h2>
+                <!-- Название + Теги -->
+                <div class="card-details">
+                    <h2 th:text="${card.name}"></h2>
+                    <div class="mb-2">
+                        <span th:each="tag : ${card.tags}" class="badge bg-secondary me-md-1" th:text="${tag.getName()}"></span>
+                    </div>
+                    <!-- Описание -->
+                    <div class="text-start mb-4">
+                        <p class="vintage-description" th:text="${card.description}"></p>
+                    </div>
 
-                <div class="mb-2">
-                <span th:each="tag : ${card.tags}"
-                      class="badge bg-secondary me-1"
-                      th:text="${tag.getName()}"></span>
                 </div>
             </div>
 
-
-            <!-- Тир -->
-            <div class="card-rank-section">
-                <span class="badge badge-rank"
-                      th:classappend="' rank-' + ${card.rank.name()}"
-                      th:text="${card.rank}">
-                </span>
-            </div>
+            <!-- Перемещённая пилюля -->
+            <span class="badge badge-rank floating-rank"
+                  th:classappend="' rank-' + ${card.rank.name()}"
+                  th:text="${card.rank}">
+    </span>
         </div>
 
-        <!-- Описание -->
-        <div class="text-start mb-4">
-            <h4>Description</h4>
-            <p th:text="${card.description}">No description provided.</p>
-        </div>
+
+
 
         <!-- Ссылки -->
         <div class="text-start mb-4">
