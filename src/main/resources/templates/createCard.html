@@ -18,24 +18,42 @@
             </div>
         </div>
 
+        <!-- ✅ МАССОВАЯ ЗАГРУЗКА КАРТИНОК -->
+        <div class="mb-5">
+            <h4 class="mb-3">Batch Upload</h4>
+            <form method="post" enctype="multipart/form-data" action="/fileSystemMany">
+                <div class="mb-3">
+                    <label for="images" class="form-label">Multiple Image Upload:</label>
+                    <input type="file" id="images" name="images" multiple
+                           class="form-control bg-dark text-light border-secondary">
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-outline-info">Upload Images & Create Cards</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 📝 РУЧНОЕ СОЗДАНИЕ КАРТОЧКИ -->
         <form th:action="@{/cards/new}" th:object="${newCard}" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="name" class="form-label">Name:</label>
                 <input type="text" th:field="*{name}" id="name"
-                       class="form-control bg-dark text-light border-secondary" required>
+                       class="form-control bg-dark text-light border-secondary">
             </div>
 
             <div class="mb-3">
                 <label for="rank" class="form-label">Rank:</label>
                 <select th:field="*{rank}" id="rank"
                         class="form-select bg-dark text-light border-secondary">
-                    <option value="FFF">Fate For Forgotten</option>
-                    <option value="DD">Damn Dirt</option>
-                    <option value="CC">Cursed / Cringe</option>
-                    <option value="BBBN">Big Based Booba</option>
-                    <option value="BBBP">Boss Booty Bakery +</option>
-                    <option value="AAA">Amazing Awesome Ass</option>
+                    <option value="UNDEFINED">Undefined</option>
                     <option value="SSS">Super Slutty Sex</option>
+                    <option value="AAA">Amazing Awesome Ass</option>
+                    <option value="BBBP">Boss Booty Bakery +</option>
+                    <option value="BBBN">Big Based Booba</option>
+                    <option value="CC">Cursed / Cringe</option>
+                    <option value="DD">Damn Dirt</option>
+                    <option value="FFF">Fate For Forgotten</option>
+
                 </select>
             </div>
 

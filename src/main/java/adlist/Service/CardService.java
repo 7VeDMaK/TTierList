@@ -7,7 +7,6 @@ import adlist.Repository.CardRepository;
 import adlist.Repository.FileDataRepository;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +22,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class CardService {
@@ -113,9 +111,7 @@ public class CardService {
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
         // Получаем абсолютный путь до папки, где запущено приложение
         Path currentDir = Paths.get("").toAbsolutePath();
-        System.out.println(currentDir);
         Path uploadPath = currentDir.resolve(uploadDir);
-        System.out.println(uploadPath);
 
         // Создаём папку, если её нет
         File uploadFolder = uploadPath.toFile();
@@ -126,15 +122,19 @@ public class CardService {
         // Полный путь до нового файла
         String filePath = uploadPath.resolve(file.getOriginalFilename()).toString();
 
-        fileDataRepository.save(FileData.builder()
-                .name(file.getOriginalFilename())
-                .type(file.getContentType())
-                .build());
+        if (!fileDataRepository.existsByName(file.getOriginalFilename())) {
 
-        // Сохраняем файл
-        file.transferTo(new File(filePath));
+            fileDataRepository.save(FileData.builder()
+                    .name(file.getOriginalFilename())
+                    .type(file.getContentType())
+                    .build());
 
-        return file.getOriginalFilename();
+            // Сохраняем файл
+            file.transferTo(new File(filePath));
+            return file.getOriginalFilename();
+        }
+        return null;
+
     }
 
     public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
