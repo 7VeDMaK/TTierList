@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,15 @@ public class CardService {
         this.fileDataRepository = fileDataRepository;
         this.tagRepository = tagRepository;
         this.cardRepository = cardRepository;
+    }
+
+    public void updateCardTags(Long cardId, List<Long> tagIds) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("Card not found"));
+
+        List<Tag> tags = tagRepository.findAllById(tagIds);
+        card.setTags(new HashSet<>(tags));
+        cardRepository.save(card);
     }
 
     // Проверка и создание новой карты (без работы с изображением)

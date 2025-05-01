@@ -8,6 +8,8 @@ import adlist.Repository.TagRepository;
 import adlist.Service.CardService;
 import adlist.Service.RankGroup;
 import adlist.Service.TagService;
+import adlist.dto.CardTagUpdateDTO;
+import adlist.dto.CardTagUpdateWrapper;
 import adlist.dto.ReorderRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +29,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-//TODO Если одинаковые картинки, ломается вид
-//TODO  Проверь, создает ли папка uploads сама себя
-
 
 @Controller
 @RequestMapping("/cards")
@@ -223,5 +224,63 @@ public class CardController {
         cardRepository.deleteById(id);
         return "redirect:/cards";
     }
+
+    @GetMapping("/bulk-edit-tags")
+    public String showBulkEditPage(Model model) {
+        List<Card> cards = cardRepository.findAll();
+        List<Tag> tags = tagRepository.findAll();
+
+        List<CardTagUpdateDTO> dtos = cards.stream().map(card -> {
+            CardTagUpdateDTO dto = new CardTagUpdateDTO();
+            dto.setCardId(Long.valueOf(card.getId()));
+            dto.setTagIds(card.getTags().stream().map(Tag::getId).map(Long::valueOf).toList());
+            return dto;
+        }).toList();
+
+        CardTagUpdateWrapper wrapper = new CardTagUpdateWrapper();
+        wrapper.setCards(dtos);
+
+        model.addAttribute("cards", cardRepository.findAll());
+        model.addAttribute("wrapper", wrapper);
+        model.addAttribute("tags", tags);
+        return "bulk-edit-tags";
+    }
+
+
+    @PostMapping("/bulk-update-tags")
+    public String updateTagsBulk(@RequestParam("tagPairs") String[] tagPairs) {
+        // Сборка Map<cardId, List<tagId>>
+        Map<Long, List<Long>> cardTagsMap = new HashMap<>();
+
+        for (String pair : tagPairs) {
+            String[] parts = pair.split("]");
+            if (parts.length != 2) continue;
+
+            Long cardId = Long.valueOf(parts[0]);
+            Long tagId = Long.valueOf(parts[1]);
+
+            cardTagsMap.computeIfAbsent(cardId, k -> new ArrayList<>()).add(tagId);
+        }
+
+        // Обновляем карты
+        for (Map.Entry<Long, List<Long>> entry : cardTagsMap.entrySet()) {
+            cardService.updateCardTags(entry.getKey(), entry.getValue());
+        }
+
+        return "redirect:/cards";
+    }
+
+
+
+
+    public Long extractCardId(String key) {
+        Pattern pattern = Pattern.compile("tagsMap\\[(\\d+)]");
+        Matcher matcher = pattern.matcher(key);
+        if (matcher.matches()) {
+            return Long.valueOf(matcher.group(1));
+        }
+        return null; // или выбросить исключение, если нужно
+    }
+
 }
 
