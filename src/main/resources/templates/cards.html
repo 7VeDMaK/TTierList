@@ -34,25 +34,24 @@
                                      class="card-image" alt="image"/>
                             </a>
                             <div class="card-info-popup">
-                                <div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
-                                    <h5 class="mb-1" th:text="${card.name}"></h5>
-                                    <span class="custom-pill me-1"
-                                          th:text="${card.rank}"
-                                          th:classappend="' rank-' + ${card.rank.name()}">
-                                        </span>
+                                <h5 class="mb-2" th:text="${card.name}"></h5>
+
+                                <div class="tags mb-2">
+        <span class="badge rounded-pill bg-secondary me-1"
+              th:each="tag : ${card.tags}"
+              th:text="${tag.name}"></span>
                                 </div>
-                                <div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
-                                    <div class="d-flex flex-wrap align-items-center">
-                                        <span th:each="tag : ${card.tags}"
-                                              class="badge rounded-pill bg-secondary me-1"
-                                              th:text="${tag.name}">
-                                        </span>
-                                    </div>
+
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <span class="custom-pill me-1"
+              th:text="${card.rank}"
+              th:classappend="' rank-' + ${card.rank.name()}"></span>
+
                                     <span th:text="'#' + ${card.getPosition() + 1} + ' in tier'"></span>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        </div>
                 </td>
             </tr>
             </tbody>

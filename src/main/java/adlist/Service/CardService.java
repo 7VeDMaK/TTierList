@@ -2,9 +2,11 @@ package adlist.Service;
 
 import adlist.Entity.Card;
 import adlist.Entity.FileData;
+import adlist.Entity.Tag;
 import adlist.Enum.Rank;
 import adlist.Repository.CardRepository;
 import adlist.Repository.FileDataRepository;
+import adlist.Repository.TagRepository;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.util.Optional;
 public class CardService {
 
     private final FileDataRepository fileDataRepository;
+    private final TagRepository tagRepository;
 
     private final CardRepository cardRepository;
 
@@ -34,8 +37,9 @@ public class CardService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    public CardService(FileDataRepository fileDataRepository, CardRepository cardRepository) {
+    public CardService(FileDataRepository fileDataRepository, TagRepository tagRepository, CardRepository cardRepository) {
         this.fileDataRepository = fileDataRepository;
+        this.tagRepository = tagRepository;
         this.cardRepository = cardRepository;
     }
 
@@ -135,6 +139,20 @@ public class CardService {
         }
         return null;
 
+    }
+
+    public void addTag(Long cardId, Long tagId) {
+        Card card = cardRepository.findById(cardId).orElseThrow();
+        Tag tag = tagRepository.findById(tagId).orElseThrow();
+        card.getTags().add(tag);
+        cardRepository.save(card);
+    }
+
+    public void removeTag(Long cardId, Long tagId) {
+        Card card = cardRepository.findById(cardId).orElseThrow();
+        Tag tag = tagRepository.findById(tagId).orElseThrow();
+        card.getTags().remove(tag);
+        cardRepository.save(card);
     }
 
     public byte[] downloadImageFromFileSystem(String fileName) throws IOException {

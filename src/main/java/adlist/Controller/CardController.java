@@ -157,6 +157,18 @@ public class CardController {
         return "editCard"; // Шаблон для формы редактирования
     }
 
+    @PostMapping("/addTag")
+    public ResponseEntity<?> addTagToCard(@RequestBody Map<String, Long> payload) {
+        cardService.addTag(payload.get("cardId"), payload.get("tagId"));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/removeTag")
+    public ResponseEntity<?> removeTagFromCard(@RequestBody Map<String, Long> payload) {
+        cardService.removeTag(payload.get("cardId"), payload.get("tagId"));
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/reorder")
     @ResponseBody
     public ResponseEntity<?> reorderCards(@RequestBody ReorderRequest request) {
