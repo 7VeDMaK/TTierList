@@ -59,7 +59,7 @@ public class CardController {
     @GetMapping
     public String getAllCards(Model model) {
         List<Card> cards = cardRepository.findAll();
-
+        List<Tag> tags = tagRepository.findAll();
         // Группируем карты по Rank
         Map<Rank, List<Card>> groupedCards = cards.stream()
                 .collect(Collectors.groupingBy(Card::getRank));
@@ -76,6 +76,7 @@ public class CardController {
 
 
         model.addAttribute("cards", cards);
+        model.addAttribute("tags", tags); // <--- добавляем
         model.addAttribute("rankGroups", rankGroups);
         model.addAttribute("uploadDir", "/fileSystem/");
 

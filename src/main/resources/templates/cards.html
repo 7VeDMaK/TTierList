@@ -3,23 +3,39 @@
 <head>
     <title>All Cards</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Подключаем внешний CSS файл -->
     <link href="/css/cards.css" rel="stylesheet">
 </head>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <body>
 
-<div class="container">
+<div class="container mt-4">
     <div class="card-container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center">
             <h2>All Cards</h2>
             <div class="d-flex gap-2">
+                <div>
+                    <input type="text" id="filterInput" class="form-control" placeholder="Search by name...">
+                </div>
                 <a href="/cards/info" class="btn btn-danger">Info mode</a>
                 <a href="/tags" class="btn btn-outline-secondary">Add Tag</a>
                 <a href="/cards/new" class="btn btn-primary">Add Card</a>
             </div>
-
         </div>
+
+        <!-- Tag Filter UI -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Filter by tags:</label>
+            <div class="d-flex flex-wrap gap-2">
+                <div th:each="tag : ${tags}" class="form-check form-check-inline">
+                    <input class="form-check-input tag-checkbox" type="checkbox"
+                           th:id="'tag-' + ${tag.id}" th:value="${tag.name}">
+                    <label class="form-check-label"
+                           th:for="'tag-' + ${tag.id}" th:text="${tag.name}"></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards Table -->
+        <!-- Cards Table -->
         <table class="table table-borderless">
             <tbody>
             <tr th:each="rankGroup : ${rankGroups}">
@@ -28,7 +44,10 @@
                     th:text="${rankGroup.rank}"></td>
                 <td>
                     <div class="card-row">
-                        <div class="card-wrapper" th:each="card : ${rankGroup.cards}">
+                        <!-- Добавлен вложенный цикл для карточек в группе -->
+                        <div th:each="card : ${rankGroup.cards}" class="card-wrapper"
+                             th:attr="data-name=${card.name},
+              data-tags=${#strings.listJoin(card.tags.![name], ',')}">
                             <a th:href="@{/cards/{id}(id=${card.id})}">
                                 <img th:src="@{|${uploadDir}${card.imageUrl}|}"
                                      class="card-image" alt="image"/>
@@ -37,27 +56,109 @@
                                 <h5 class="mb-2" th:text="${card.name}"></h5>
 
                                 <div class="tags mb-2">
-        <span class="badge rounded-pill bg-secondary me-1"
-              th:each="tag : ${card.tags}"
-              th:text="${tag.name}"></span>
+                            <span class="badge rounded-pill bg-secondary me-1"
+                                  th:each="tag : ${card.tags}"
+                                  th:text="${tag.name}"></span>
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center flex-wrap">
-        <span class="custom-pill me-1"
-              th:text="${card.rank}"
-              th:classappend="' rank-' + ${card.rank.name()}"></span>
-
+                            <span class="custom-pill me-1"
+                                  th:text="${card.rank}"
+                                  th:classappend="' rank-' + ${card.rank.name()}"></span>
                                     <span th:text="'#' + ${card.getPosition() + 1} + ' in tier'"></span>
                                 </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- JS -->
+<script>
+    const ruToEnMap = {
+        'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u', 'ш': 'i', 'щ': 'o', 'з': 'p',
+        'х': '[', 'ъ': ']', 'ф': 'a', 'ы': 's', 'в': 'd', 'а': 'f', 'п': 'g', 'р': 'h', 'о': 'j', 'л': 'k',
+        'д': 'l', 'ж': ';', 'э': "'", 'я': 'z', 'ч': 'x', 'с': 'c', 'м': 'v', 'и': 'b', 'т': 'n', 'ь': 'm',
+        'б': ',', 'ю': '.', 'ё': ''
+    };
+
+    function convertRussianToEnglish(input) {
+        return input.split('').map(char => ruToEnMap[char.toLowerCase()] || char).join('');
+    }
+
+    function matchesAllLetters(name, filter) {
+        const nameLower = name.toLowerCase();
+        const filterLower = filter.toLowerCase();
+        const nameCharCount = {};
+        for (let char of nameLower) {
+            nameCharCount[char] = (nameCharCount[char] || 0) + 1;
+        }
+        for (let char of filterLower) {
+            if (!nameCharCount[char]) return false;
+            nameCharCount[char]--;
+        }
+        return true;
+    }
+
+    function normalizeTags(tags) {
+        return tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+    }
+
+    function cardMatchesSelectedTags(cardTags, selectedTags) {
+        // Если не выбрано ни одного тега - показываем все карточки
+        if (selectedTags.length === 0) return true;
+
+        // Проверяем, есть ли у карточки хотя бы один из выбранных тегов
+        return selectedTags.every(tag => cardTags.includes(tag));
+
+    }
+
+    function filterCards() {
+        console.log('--- filterCards called ---');
+        try {
+            const raw = document.getElementById('filterInput').value;
+            console.log('Raw input:', raw);
+
+            const filter = convertRussianToEnglish(raw);
+            console.log('Converted filter:', filter);
+
+            const selectedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked'))
+                .map(cb => cb.value.toLowerCase());
+            console.log('Selected tags:', selectedTags);
+
+            const cards = document.querySelectorAll('.card-wrapper');
+            console.log('Total cards found:', cards.length);
+
+            cards.forEach((card, index) => {
+                const name = card.getAttribute('data-name') || '';
+                const cardTags = normalizeTags(card.getAttribute('data-tags') || '');
+
+                console.log(`Card ${index}:`, {
+                    name: name,
+                    tags: cardTags,
+                    element: card
+                });
+
+                const nameMatches = matchesAllLetters(name, filter);
+                const tagMatches = cardMatchesSelectedTags(cardTags, selectedTags);
+                console.log(`Card ${index} matches - name: ${nameMatches}, tags: ${tagMatches}`);
+
+                card.style.display = nameMatches && tagMatches ? '' : 'none';
+            });
+        } catch (error) {
+            console.error('Filter error:', error);
+        }
+    }
+
+    document.getElementById('filterInput').addEventListener('input', filterCards);
+    document.querySelectorAll('.tag-checkbox').forEach(cb => {
+        cb.addEventListener('change', filterCards);
+    });
+</script>
 
 </body>
 </html>
