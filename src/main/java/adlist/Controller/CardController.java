@@ -7,9 +7,6 @@ import adlist.Repository.CardRepository;
 import adlist.Repository.TagRepository;
 import adlist.Service.CardService;
 import adlist.Service.RankGroup;
-import adlist.Service.TagService;
-import adlist.dto.CardTagUpdateDTO;
-import adlist.dto.CardTagUpdateWrapper;
 import adlist.dto.ReorderRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +31,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Controller
@@ -49,7 +44,7 @@ public class CardController {
     private final TagRepository tagRepository;
 
 
-    public CardController(CardRepository cardRepository, CardService cardService, TagRepository tagRepository, TagService tagService) {
+    public CardController(CardRepository cardRepository, CardService cardService, TagRepository tagRepository) {
         this.cardRepository = cardRepository;
         this.cardService = cardService;
         this.tagRepository = tagRepository;
@@ -58,26 +53,8 @@ public class CardController {
     // Вывод всех карточек
     @GetMapping
     public String getAllCards(Model model) {
-        List<Card> cards = cardRepository.findAll();
-        List<Tag> tags = tagRepository.findAll();
-        // Группируем карты по Rank
-        Map<Rank, List<Card>> groupedCards = cards.stream()
-                .collect(Collectors.groupingBy(Card::getRank));
-
-        // Формируем упорядоченный список групп рангов
-        List<RankGroup> rankGroups = Arrays.stream(Rank.values())
-                .map(rank -> {
-                    List<Card> sortedCards = groupedCards.getOrDefault(rank, List.of()).stream()
-                            .sorted(Comparator.comparingInt(Card::getPosition))
-                            .collect(Collectors.toList());
-                    return new RankGroup(rank, sortedCards);
-                })
-                .collect(Collectors.toList());
-
-
-        model.addAttribute("cards", cards);
-        model.addAttribute("tags", tags); // <--- добавляем
-        model.addAttribute("rankGroups", rankGroups);
+        model.addAttribute("tags", tagRepository.findAll());
+        model.addAttribute("rankGroups", buildRankGroups());
         model.addAttribute("uploadDir", "/fileSystem/");
 
         return "cards"; // шаблон для отображения списка карточек
@@ -85,14 +62,18 @@ public class CardController {
 
     @GetMapping("info")
     public String getAllCards2(Model model) {
-        List<Card> cards = cardRepository.findAll();
+        model.addAttribute("rankGroups", buildRankGroups());
+        model.addAttribute("uploadDir", "/fileSystem/");
 
-        // Группируем карты по Rank
-        Map<Rank, List<Card>> groupedCards = cards.stream()
+        return "cards2"; // шаблон для отображения списка карточек
+    }
+
+    // Все карточки, сгруппированные по Rank в порядке enum и отсортированные по позиции
+    private List<RankGroup> buildRankGroups() {
+        Map<Rank, List<Card>> groupedCards = cardRepository.findAll().stream()
                 .collect(Collectors.groupingBy(Card::getRank));
 
-        // Формируем упорядоченный список групп рангов
-        List<RankGroup> rankGroups = Arrays.stream(Rank.values())
+        return Arrays.stream(Rank.values())
                 .map(rank -> {
                     List<Card> sortedCards = groupedCards.getOrDefault(rank, List.of()).stream()
                             .sorted(Comparator.comparingInt(Card::getPosition))
@@ -100,13 +81,6 @@ public class CardController {
                     return new RankGroup(rank, sortedCards);
                 })
                 .collect(Collectors.toList());
-
-        model.addAttribute("allTags", tagRepository.findAll());
-        model.addAttribute("cards", cards);
-        model.addAttribute("rankGroups", rankGroups);
-        model.addAttribute("uploadDir", "/fileSystem/");
-
-        return "cards2"; // шаблон для отображения списка карточек
     }
 
     @GetMapping("{id}")
@@ -149,7 +123,7 @@ public class CardController {
         cardRepository.save(card);
         return "redirect:/cards";
     }
-    
+
     // Контроллер для редактирования карточки
     @GetMapping("/edit/{id}")
     public String editCardForm(@PathVariable("id") Long id, Model model) {
@@ -228,22 +202,8 @@ public class CardController {
 
     @GetMapping("/bulk-edit-tags")
     public String showBulkEditPage(Model model) {
-        List<Card> cards = cardRepository.findAll();
-        List<Tag> tags = tagRepository.findAll();
-
-        List<CardTagUpdateDTO> dtos = cards.stream().map(card -> {
-            CardTagUpdateDTO dto = new CardTagUpdateDTO();
-            dto.setCardId(Long.valueOf(card.getId()));
-            dto.setTagIds(card.getTags().stream().map(Tag::getId).map(Long::valueOf).toList());
-            return dto;
-        }).toList();
-
-        CardTagUpdateWrapper wrapper = new CardTagUpdateWrapper();
-        wrapper.setCards(dtos);
-
         model.addAttribute("cards", cardRepository.findAll());
-        model.addAttribute("wrapper", wrapper);
-        model.addAttribute("tags", tags);
+        model.addAttribute("tags", tagRepository.findAll());
         return "bulk-edit-tags";
     }
 
@@ -271,17 +231,4 @@ public class CardController {
         return "redirect:/cards";
     }
 
-
-
-
-    public Long extractCardId(String key) {
-        Pattern pattern = Pattern.compile("tagsMap\\[(\\d+)]");
-        Matcher matcher = pattern.matcher(key);
-        if (matcher.matches()) {
-            return Long.valueOf(matcher.group(1));
-        }
-        return null; // или выбросить исключение, если нужно
-    }
-
 }
-

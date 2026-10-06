@@ -7,15 +7,11 @@ import adlist.Enum.Rank;
 import adlist.Repository.CardRepository;
 import adlist.Repository.FileDataRepository;
 import adlist.Repository.TagRepository;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +30,6 @@ public class CardService {
 
     private final CardRepository cardRepository;
 
-    @Getter
     @Value("${file.upload-dir}")
     private String uploadDir;
 
@@ -51,17 +46,6 @@ public class CardService {
         List<Tag> tags = tagRepository.findAllById(tagIds);
         card.setTags(new HashSet<>(tags));
         cardRepository.save(card);
-    }
-
-    // Проверка и создание новой карты (без работы с изображением)
-    public Card createCard(Card card) {
-        if (card.getName() == null || card.getName().isEmpty()) {
-            throw new IllegalArgumentException("Card name cannot be empty");
-        }
-        if (cardRepository.existsByName(card.getName())) {
-            throw new IllegalArgumentException("Card with this name already exists");
-        }
-        return cardRepository.save(card);
     }
 
     public Card updateCard(Long id, Card card, MultipartFile imageFile) throws IOException {
@@ -101,26 +85,6 @@ public class CardService {
             }
         }
     }
-
-    public void resizeImage(String inputPath, String outputPath) throws IOException {
-        final int SIZE = 512;
-        File inputFile = new File(inputPath);
-        BufferedImage originalImage = ImageIO.read(inputFile);
-
-        // Создание нового изображения с указанным размером
-        Image scaledImage = originalImage.getScaledInstance(SIZE, SIZE, Image.SCALE_SMOOTH);
-        BufferedImage bufferedImage = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_RGB);
-
-        // Перерисовываем изображение в новый буфер с нужным размером
-        Graphics2D g = bufferedImage.createGraphics();
-        g.drawImage(scaledImage, 0, 0, null);
-        g.dispose();
-
-        // Сохраняем измененное изображение
-        File outputFile = new File(outputPath);
-        ImageIO.write(bufferedImage, "jpg", outputFile); // Используйте подходящий формат
-    }
-
 
     public String uploadImageToFileSystem(MultipartFile file) throws IOException {
         // Получаем абсолютный путь до папки, где запущено приложение

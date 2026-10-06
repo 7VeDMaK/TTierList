@@ -15,24 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
-public class CardImageCotroller {
+public class CardImageController {
 
     private final CardService service;
 
     private final CardRepository cardRepository;
 
-    public CardImageCotroller(CardService service, CardRepository cardRepository) {
+    public CardImageController(CardService service, CardRepository cardRepository) {
         this.service = service;
         this.cardRepository = cardRepository;
     }
 
     @PostMapping("/fileSystem")
     public ResponseEntity<?> uploadImageToFIleSystem(@RequestParam("image") MultipartFile file) throws IOException {
-//        service.resizeImage();
         String uploadImage = service.uploadImageToFileSystem(file);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(uploadImage);
@@ -40,8 +37,6 @@ public class CardImageCotroller {
 
     @PostMapping("/fileSystemMany")
     public String uploadAndCreateCard(@RequestParam("images") MultipartFile[] files) throws IOException {
-        List<String> uploadedFiles = new ArrayList<>();
-
         for (MultipartFile file : files) {
             String fileName = service.uploadImageToFileSystem(file);
             if (fileName != null) {
@@ -53,7 +48,6 @@ public class CardImageCotroller {
                 card.setImageUrl(fileName);
 
                 cardRepository.save(card);
-                uploadedFiles.add(fileName);
             }
         }
 

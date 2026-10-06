@@ -118,34 +118,21 @@
     }
 
     function filterCards() {
-        console.log('--- filterCards called ---');
         try {
             const raw = document.getElementById('filterInput').value;
-            console.log('Raw input:', raw);
-
             const filter = convertRussianToEnglish(raw);
-            console.log('Converted filter:', filter);
 
             const selectedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked'))
                 .map(cb => cb.value.toLowerCase());
-            console.log('Selected tags:', selectedTags);
 
             const cards = document.querySelectorAll('.card-wrapper');
-            console.log('Total cards found:', cards.length);
 
-            cards.forEach((card, index) => {
+            cards.forEach(card => {
                 const name = card.getAttribute('data-name') || '';
                 const cardTags = normalizeTags(card.getAttribute('data-tags') || '');
 
-                console.log(`Card ${index}:`, {
-                    name: name,
-                    tags: cardTags,
-                    element: card
-                });
-
                 const nameMatches = matchesAllLetters(name, filter);
                 const tagMatches = cardMatchesSelectedTags(cardTags, selectedTags);
-                console.log(`Card ${index} matches - name: ${nameMatches}, tags: ${tagMatches}`);
 
                 card.style.display = nameMatches && tagMatches ? '' : 'none';
             });
