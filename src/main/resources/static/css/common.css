@@ -1,0 +1,21 @@
+body {
+    background-color: #23242a;
+    color: #f8f9fa;
+}
+
+.card {
+    background-color: #2e2f37;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.btn-outline-light, .btn-outline-secondary {
+    border-color: #ccc;
+    color: #ccc;
+}
+
+.btn-outline-light:hover, .btn-outline-secondary:hover {
+    background-color: #444;
+    color: #fff;
+}

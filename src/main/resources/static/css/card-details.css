@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital@1&display=swap');
+
+body {
+    background-color: #23242a;
+    color: #e0e0e0;
+}
+
+.custom-card {
+    background-color: #2c2d33;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.card-header-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card-details {
+    margin-top: -100px; /* Поднимает название и теги ближе к картинке */
+}
+
+
+.card-image-preview {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    background-color: #2c2d33;
+    border: 2px solid #464646;
+}
+
+.card-rank-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-rank {
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+    background-color: #46493b;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.tags-container {
+    margin-top: 1rem;
+}
+
+.tags-container .badge {
+    background-color: #5a5c6a;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+h2, h4 {
+    color: #ffffff;
+}
+
+a {
+    color: #76b5ff;
+}
+
+a:hover {
+    color: #a8d0ff;
+}
+
+/* Цвета для рангов */
+.badge-rank.rank-SSS {
+    background-color: #fe7f7e; /* Ярко-красный */
+    color: #23242a;
+}
+
+.badge-rank.rank-AAA {
+    background-color: #ffbe7e; /* Оранжевый */
+    color: #23242a;
+}
+
+.badge-rank.rank-BBBP {
+    background-color: #fffe7e; /* Жёлтый */
+    color: #23242a;
+}
+
+.badge-rank.rank-BBBN {
+    background-color: #7fbefe; /* Голубой */
+    color: #23242a;
+}
+
+.badge-rank.rank-CC {
+    background-color: #ff7fff; /* Розовый */
+    color: #23242a;
+}
+
+.badge-rank.rank-DD {
+    background-color: #848584; /* Серый */
+    color: #23242a;
+}
+
+.badge-rank.rank-FFF {
+    background-color: #cececf; /* Светло-серый */
+    color: #23242a;
+}
+
+.card-container {
+    background: #37373e;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-top: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+.card-header-wrapper {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.floating-rank {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 1rem;
+    z-index: 10;
+}
+.card-details .badge {
+    font-size: 1rem; /* увеличен шрифт */
+    padding: 0.5em 0.9em; /* увеличен внутренний отступ */
+    border-radius: 12px; /* округлые края */
+    font-weight: 600; /* жирнее */
+}
+
+.vintage-description {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #79797e;
+}
